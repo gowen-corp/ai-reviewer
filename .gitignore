@@ -4,59 +4,58 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
-*.py~
-*.py.class
-*.so
-*.egg-info/
-
-# Virtual environments
+.Python
+env/
 venv/
 .venv/
-env/
-.ENV/
+.ENV
+.ENV.*
+.venv.bak/
+.venv*/
+.eggs/
+.egg-info/
+*.egg-info/
+*.egg
 
 # Build artifacts
 build/
 dist/
-*.egg
-*.whl
-pip-log.txt
-pip-delete-this-directory.txt
-
-# Testing
-.coverage
-coverage/
-htmlcov/
-.nox/
-.tox/
-
-# Linting
-.mypy_cache/
-.pytest_cache/
-.hypothesis/
+*.so
+*.dylib
+*.dll
 
 # Logs
 *.log
-
-# OS generated files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
 
 # Environment variables
 .env
 .env.local
 .env.*
-!.env.example
 
-# IDE
+# IDE specific
 .vscode/
 .idea/
 *.swp
 *.swo
 *.tmp
+
+# Coverage
+.coverage
+coverage/
+htmlcov/
+
+# Testing
+.pytest_cache/
+.mypy_cache/
+.hypothesis/
+
+# Distribution / packaging
+*.tar.gz
+*.whl
+pip-log.txt
+pip-delete-this-directory.txt
+
+# System
+.DS_Store
+Thumbs.db
 ```
