@@ -1,0 +1,9 @@
+openai>=1.30
+pydantic>=2.0
+rich
+
+[dev]
+pytest>=7.0
+pytest-asyncio
+ruff
+mypy
