@@ -27,6 +27,8 @@ from typing import Any
 from .llm_client import LLMClient
 from .target_resolver import ReviewTarget
 from .prompts import get_prompt_for_stage, SYSTEM_PROMPT
+from .precheck import run_precheck, PrecheckStatus, PrecheckResult
+from .filters import filter_and_sanitize, has_blocking_secrets, get_blocking_reason
 
 logger = logging.getLogger(__name__)
 
@@ -419,6 +421,11 @@ class ReviewPipeline:
     ) -> ReviewResult:
         """Run the review pipeline on a single file.
         
+        This method first runs precheck (linters + secret scanning) before
+        proceeding to LLM-based review stages. If precheck finds critical
+        issues (syntax errors, secrets, merge conflicts), the LLM is not called
+        and the file is marked as BLOCKED.
+        
         Args:
             target: Review target containing metadata.
             file_path: Path to the file to review.
@@ -442,6 +449,74 @@ class ReviewPipeline:
                 summary=f"Failed to read file: {e}",
             )
         
+        # === PHASE 5: PRE-CHECK (Linters + Secret Scanning) ===
+        # Run local precheck before any LLM calls
+        precheck_result = run_precheck(file_path, file_content, use_cache=True)
+        
+        # Scan for secrets/PII
+        filter_result = filter_and_sanitize(file_content, file_path, do_sanitize=False)
+        
+        # Check if precheck found blocking issues
+        if precheck_result.status == PrecheckStatus.BLOCK:
+            logger.warning(
+                "Precheck blocked %s: %d issues found",
+                file_path,
+                len(precheck_result.issues),
+            )
+            # Convert precheck issues to findings
+            precheck_findings = []
+            for issue in precheck_result.issues:
+                precheck_findings.append(Finding(
+                    severity=issue.severity,
+                    category=issue.category,
+                    description=f"[Precheck] {issue.code}: {issue.message}",
+                    line_number=issue.line_number,
+                    suggestion="Fix syntax/security issues before LLM review",
+                    file_path=str(file_path),
+                ))
+            
+            return ReviewResult(
+                target=target,
+                mode=self.mode,
+                overall_verdict=Verdict.BLOCK,
+                all_findings=precheck_findings,
+                stage_results=[],
+                blocked=True,
+                blocked_at_stage="PRECHECK_LINTER",
+                summary=f"Precheck failed: {len(precheck_result.issues)} issues",
+            )
+        
+        # Check if secrets were found
+        if filter_result.has_secrets and has_blocking_secrets(filter_result.secrets):
+            reason = get_blocking_reason(filter_result.secrets) or "Secrets detected"
+            logger.warning("Precheck blocked %s: %s", file_path, reason)
+            
+            # Convert secret matches to findings
+            secret_findings = []
+            for secret in filter_result.secrets:
+                secret_findings.append(Finding(
+                    severity="critical",
+                    category="security",
+                    description=f"[Security] {secret.secret_type.name}: {secret.pattern_name}",
+                    line_number=secret.line_number,
+                    suggestion="Remove secrets before committing; use environment variables",
+                    file_path=str(file_path),
+                ))
+            
+            return ReviewResult(
+                target=target,
+                mode=self.mode,
+                overall_verdict=Verdict.BLOCK,
+                all_findings=secret_findings,
+                stage_results=[],
+                blocked=True,
+                blocked_at_stage="PRECHECK_SECRETS",
+                summary=f"Security block: {reason}",
+            )
+        
+        # If we have non-blocking secrets, sanitize content before sending to LLM
+        content_for_llm = filter_result.sanitized_content if filter_result.sanitized_content else file_content
+        
         stages = self._get_stages_for_mode()
         stage_results: list[StageResult] = []
         all_findings: list[Finding] = []
@@ -455,7 +530,7 @@ class ReviewPipeline:
                 stage_name=stage_name,
                 target=target,
                 file_path=file_path,
-                file_content=file_content,
+                file_content=content_for_llm,
                 previous_findings=all_findings,
             )
             

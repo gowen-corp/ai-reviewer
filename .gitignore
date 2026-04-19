@@ -4,40 +4,54 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
-.Python
-env/
+*.py~
+*.py.class
+*.so
+*.egg-info/
+
+# Virtual environments
 venv/
 .venv/
-.ENV
-.env
-.env.*
-.venv.bak/
-.python-version
+env/
+.ENV/
 
-# Distribution / packaging
-.Python
+# Build artifacts
 build/
-develop-eggs/
 dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
 *.egg
+*.whl
+pip-log.txt
+pip-delete-this-directory.txt
 
 # Testing
 .coverage
 coverage/
 htmlcov/
-.nosetests
+.nox/
+.tox/
+
+# Linting
+.mypy_cache/
 .pytest_cache/
+.hypothesis/
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Environment variables
+.env
+.env.local
+.env.*
+!.env.example
 
 # IDE
 .vscode/
@@ -45,16 +59,4 @@ htmlcov/
 *.swp
 *.swo
 *.tmp
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Logs
-*.log
-
-# Environment
-.env
-.env.local
-*.env.*
 ```
