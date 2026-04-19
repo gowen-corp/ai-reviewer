@@ -2,11 +2,15 @@ pyproject.toml
 src/ai_reviewer/__init__.py
 src/ai_reviewer/cli.py
 src/ai_reviewer/config.py
+src/ai_reviewer/llm_client.py
 src/ai_reviewer/models.py
 src/ai_reviewer/target_resolver.py
+src/ai_reviewer/token_tracker.py
 src/ai_reviewer.egg-info/PKG-INFO
 src/ai_reviewer.egg-info/SOURCES.txt
 src/ai_reviewer.egg-info/dependency_links.txt
 src/ai_reviewer.egg-info/entry_points.txt
 src/ai_reviewer.egg-info/requires.txt
 src/ai_reviewer.egg-info/top_level.txt
+tests/test_llm_client.py
+tests/test_token_tracker.py
