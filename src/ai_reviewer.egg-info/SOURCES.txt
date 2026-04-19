@@ -3,6 +3,7 @@ src/ai_reviewer/__init__.py
 src/ai_reviewer/cli.py
 src/ai_reviewer/config.py
 src/ai_reviewer/models.py
+src/ai_reviewer/target_resolver.py
 src/ai_reviewer.egg-info/PKG-INFO
 src/ai_reviewer.egg-info/SOURCES.txt
 src/ai_reviewer.egg-info/dependency_links.txt
