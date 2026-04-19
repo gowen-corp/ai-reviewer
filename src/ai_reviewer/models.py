@@ -122,6 +122,24 @@ class PathsConfig(BaseModel):
         return self.config_dir / "credentials.toml"
 
 
+class HooksConfig(BaseModel):
+    """Hook configuration for pre/post processing.
+    
+    Attributes:
+        pre_process: Command to run before review starts.
+        post_process: Command to run after review completes.
+    """
+    
+    pre_process: str | None = Field(
+        default=None,
+        description="Command to run before review starts",
+    )
+    post_process: str | None = Field(
+        default=None,
+        description="Command to run after review completes",
+    )
+
+
 class Config(BaseModel):
     """Main configuration model combining all sections.
     
@@ -133,6 +151,7 @@ class Config(BaseModel):
         model: Model-specific configuration.
         review: Code review configuration.
         paths: XDG-compliant paths.
+        hooks: Hook configuration for pre/post processing.
         verbose: Enable verbose output.
         dry_run: Perform dry run without changes.
     """
@@ -141,6 +160,7 @@ class Config(BaseModel):
     model: ModelConfig = Field(default_factory=ModelConfig)
     review: ReviewConfig = Field(default_factory=ReviewConfig)
     paths: PathsConfig
+    hooks: HooksConfig = Field(default_factory=HooksConfig)
     verbose: bool = Field(default=False, description="Enable verbose output")
     dry_run: bool = Field(default=False, description="Perform dry run without changes")
     

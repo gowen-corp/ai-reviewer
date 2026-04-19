@@ -1,10 +1,14 @@
 pyproject.toml
 src/ai_reviewer/__init__.py
+src/ai_reviewer/cache.py
 src/ai_reviewer/cli.py
 src/ai_reviewer/config.py
 src/ai_reviewer/filters.py
+src/ai_reviewer/history.py
+src/ai_reviewer/hooks.py
 src/ai_reviewer/llm_client.py
 src/ai_reviewer/models.py
+src/ai_reviewer/output.py
 src/ai_reviewer/pipeline.py
 src/ai_reviewer/precheck.py
 src/ai_reviewer/target_resolver.py
